@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>iCab Tracking</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 21.026196, lng: 105.801458},
+          zoom: 13
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmBHqD8Eyw4h_OW2Zcg0SAsfmgEAlULco&callback=initMap"
+   
+    async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script>
+        // var socket = io('http://210.245.91.97:3001');
+        <!-- var socket = io('http://10.103.18.161:4000'); -->
+		var socket = io('http://103.233.48.39:4000/tracking');
+		
+        var movePath;
+        var movePathCoordinates = [];
+		var lat = 21.1414083;
+		var lng = 105.8458556;
+		var start = 0;
+
+        socket.on('connect', function(){});
+        <!-- socket.emit('iCabUserStartShareLocation', { -->
+          <!-- token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTEyNzE1MjU1fQ.gRdccyJyX4McCcn3yYcZQ7gmpkHQcP1B5nCq5aUCfYF5GtSRpHuY5RhpbI9d1PALW3oU1DVU1H9_RcDttpJtHkw0qtPlRWXzG2Qnp6CW4hYXA0g9_LmQn1RL8MGZNbHCx8cs9bkjt1FFvGqWCvT0ZxfpUi7i48soqfBMNb3Jt7QkkBvyxxPpL_udkNDVhPOmv5hy4bn_QU0VIUcCK3HpPPxhicRrnRCbw2S_Y1xOOIFmkUpFfDf0gNawOfEZDXgr1yTCgUSjJYREee2DnXulJo46jGDzM2KFU6O-Vku7zrhfdDiHzHbiWy6ir5XVMEFZ8q0is6yIQMFl47e1HJEyGfs8rkLi-SOi_9EiHcXCsDDx-ZTbv8WAPQ3qP63__jmcyrgAhaL7HdiJnLMbhle5yUZMd5lGKk-c6x-UJp3EBCaPAh5sFfC3EkGHeRwXM0PKzpSBPAj7FabFDLs9vY4Q2aWCBG05sUb40KZSQR6MHXz2WfgwTS0PU0Uwos8BAE-kyIZ3-1kI5-L1o0yT_7dn77AKZNdUPkcqpnnZpT6Vubsz5K-jcpJly2BPMWL0x3pBj_TypgAsV0Rsr7yWG7zRZldfUXNAZGGvsXTL-wJtyZkZ8566rL2bCxXSUOAom7h6SHn1cEpWQ67Dz_3CdDNfHZSGpulzQLxOU161kZOPUto', -->
+          <!-- branchID : '1', -->
+          <!-- userID: '364DBEEFAC7618ECE0531F15680AA547', -->
+          <!-- currentSpeed : '0', -->
+          <!-- latitude : lat, -->
+          <!-- longitude : lng -->
+        <!-- }); -->
+		loopAction();
+		function loopAction(){
+			if(start < 10)
+			{
+				start += 1;
+				lat = lat + 0.1;
+				socket.emit('iCabUserNewAction', {
+					token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTEyNzE1MjU1fQ.gRdccyJyX4McCcn3yYcZQ7gmpkHQcP1B5nCq5aUCfYF5GtSRpHuY5RhpbI9d1PALW3oU1DVU1H9_RcDttpJtHkw0qtPlRWXzG2Qnp6CW4hYXA0g9_LmQn1RL8MGZNbHCx8cs9bkjt1FFvGqWCvT0ZxfpUi7i48soqfBMNb3Jt7QkkBvyxxPpL_udkNDVhPOmv5hy4bn_QU0VIUcCK3HpPPxhicRrnRCbw2S_Y1xOOIFmkUpFfDf0gNawOfEZDXgr1yTCgUSjJYREee2DnXulJo46jGDzM2KFU6O-Vku7zrhfdDiHzHbiWy6ir5XVMEFZ8q0is6yIQMFl47e1HJEyGfs8rkLi-SOi_9EiHcXCsDDx-ZTbv8WAPQ3qP63__jmcyrgAhaL7HdiJnLMbhle5yUZMd5lGKk-c6x-UJp3EBCaPAh5sFfC3EkGHeRwXM0PKzpSBPAj7FabFDLs9vY4Q2aWCBG05sUb40KZSQR6MHXz2WfgwTS0PU0Uwos8BAE-kyIZ3-1kI5-L1o0yT_7dn77AKZNdUPkcqpnnZpT6Vubsz5K-jcpJly2BPMWL0x3pBj_TypgAsV0Rsr7yWG7zRZldfUXNAZGGvsXTL-wJtyZkZ8566rL2bCxXSUOAom7h6SHn1cEpWQ67Dz_3CdDNfHZSGpulzQLxOU161kZOPUto',
+					branchID : '1',
+					userID: '364DBEEFAC7618ECE0531F15680AA547',
+					roomName: 'icab-1',
+					currentSpeed : '0',
+					latitude : lat,
+					longitude : lng,
+					jobNumber: "default",
+					actionType: "online",
+					subaction: "locationchange"
+				});
+				setTimeout(loopAction, 1000);
+				console.log('iCabUserNewAction');
+
+			}
+		}
+        
+      
+        socket.on('disconnect', function(){});
+      </script>
+</body>
+</html>
